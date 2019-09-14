@@ -8,12 +8,12 @@ pipeline {
                     //for (int i = 0; i < browsers.size(); ++i) {
                     //    echo "Testing the ${browsers[i]} browser"
                     //}
-                    mydata = readYaml file: "values.yml"
+                    mydata = readYaml file: "values.yaml"
                     //modify
                     mydata.testing.valueA = "Hello B"
                     mydata.testing.valueB = "Hello A"
-                    writeYaml file: 'values.yml', data: mydata
-                    sh "cat values.yml"
+                    writeYaml file: 'values.yaml', data: mydata
+                    sh "cat values.yaml"
                 }
             }
         }
