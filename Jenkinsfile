@@ -9,9 +9,9 @@ pipeline {
                 script {
 
                 yamlReplace(
-                    fileName = "values.yaml",
-                    keyName = "Mesos.KubeHost",
-                    keyValue = "hostname.com"
+                    fileName: "values.yaml",
+                    keyName: "Mesos.KubeHost",
+                    keyValue: "hostname.com"
                 )
 
                     //def browsers = ['chrome', 'firefox']
