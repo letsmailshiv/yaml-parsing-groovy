@@ -1,3 +1,6 @@
+library identifier: 'nodejs-bdd-backend-api_nix@master', retriever: modernSCM([$class: 'GitSCMSource',
+	remote: 'https://github.com/letsmailshiv/yaml-parsing-shared-lib.git'])
+
 pipeline {
     agent any
     stages {
@@ -5,12 +8,18 @@ pipeline {
             steps {
                 script {
 
+                yamlReplace(
+                    fileName = "values.yaml",
+                    keyName = "Mesos.KubeHost",
+                    keyValue = "hostname.com"
+                )
+
                     //def browsers = ['chrome', 'firefox']
                     //for (int i = 0; i < browsers.size(); ++i) {
                     //    echo "Testing the ${browsers[i]} browser"
                     //}
-                updateYamlKey("${pwd()}/", "values.yaml", "Mesos.KubeHost" ,"hostname.com")
-                updateYamlKey("${pwd()}/", "values.yaml", "Mesos.KubeHosta[+].cat" ,"sasdads")
+                //updateYamlKey("${pwd()}/", "values.yaml", "Mesos.KubeHost" ,"hostname.com")
+                //updateYamlKey("${pwd()}/", "values.yaml", "Mesos.KubeHosta[+].cat" ,"sasdads")
                 }
             }
         }
