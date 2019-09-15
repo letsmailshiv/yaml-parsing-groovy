@@ -10,8 +10,18 @@ pipeline {
 
                 yamlReplace(
                     fileName: "values.yaml",
-                    keyName: "Mesos.KubeHost",
-                    keyValue: "hostname.com"
+                    keyName: "config.sample[+].yaml",
+                    keyValue: "credentailsUpdated"
+                )
+                yamlReplace(
+                    fileName: "values.yaml",
+                    keyName: "config.sample[+].yaml",
+                    keyValue: "credentailsUpdated2"
+                )
+                yamlReplace(
+                    fileName: "values.yaml",
+                    keyName: "config.build.message",
+                    keyValue: "buildwasSuccessful"
                 )
 
                     //def browsers = ['chrome', 'firefox']
