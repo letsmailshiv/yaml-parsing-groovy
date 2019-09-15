@@ -1,3 +1,479 @@
-testing:
-  valueA: "Hello A"
-  valueB: "Hello B"
+# Configure these values and ensure you provide the secret values in secret.yaml
+
+# Example usage:
+# helm upgrade --install --namespace=cmp-jenkins cmp-jenkins . -f ../secret.yaml
+
+Mesos:
+  KubeHost: 
+  # This is the IP of the KubeHost
+  AdvertiseIP: 
+  # This is the NodePort that is exposed to mesos slaves for libmesos
+  AdvertisePort: 
+  # This is the NodePort that is exposed to mesos slaves for JNLP connectivity
+  SlaveListenerPort: 
+  # This is the NodePort for the main JenkinsUI/api - required as NodePort by Mesos plugin
+  JenkinsNodePort: 
+
+OrgSettings:
+  github:
+    organization: test-cb-job
+      # groups to be used with matrix-auth
+  githubAuthorization:
+    admin: shivendra-sharma
+    # admin group is ideally devops but for simplified pipelines its engineering
+    adminGroup: devops
+    # below groups have limited privileges
+    engineeringGroup: engineering
+    engineeringLeadsGroup : engineering_leads
+    readonlyGroup: readonly
+
+    
+Settings:
+  Hostname: "mock-jenkins-url.com"
+  PersistenceStorageClass: "rook-ceph-block" # Change this to 'rook-ceph-block' if on jenk-27
+  Image: "goharbor-sandbox.lbg.eu-gb.mybluemix.net/cmp/jenkins"
+  ImageTag: "2.184"
+  
+# Add the seed jobs init job
+  Jobs: |-
+    InitSeedJobs: |-
+      <?xml version='1.1' encoding='UTF-8'?>
+      <jenkins.branch.OrganizationFolder plugin="branch-api@2.5.4">
+        <description>GitHub Enterprise Org folder configured with JCasC</description>
+        <displayName>test-cb-job</displayName>
+        <properties>
+          <jenkins.branch.OrganizationChildTriggersProperty>
+            <templates>
+              <com.cloudbees.hudson.plugins.folder.computed.PeriodicFolderTrigger plugin="cloudbees-folder@6.9">
+                <spec>H H/4 * * *</spec>
+                <interval>86400000</interval>
+              </com.cloudbees.hudson.plugins.folder.computed.PeriodicFolderTrigger>
+            </templates>
+          </jenkins.branch.OrganizationChildTriggersProperty>
+          <jenkins.branch.OrganizationChildOrphanedItemsProperty>
+            <strategy class="jenkins.branch.OrganizationChildOrphanedItemsProperty$Inherit"/>
+          </jenkins.branch.OrganizationChildOrphanedItemsProperty>
+        </properties>
+        <folderViews class="jenkins.branch.OrganizationFolderViewHolder">
+          <owner reference="../.."/>
+        </folderViews>
+        <healthMetrics>
+          <com.cloudbees.hudson.plugins.folder.health.WorstChildHealthMetric plugin="cloudbees-folder@6.9">
+            <nonRecursive>false</nonRecursive>
+          </com.cloudbees.hudson.plugins.folder.health.WorstChildHealthMetric>
+        </healthMetrics>
+        <icon class="jenkins.branch.MetadataActionFolderIcon">
+          <owner class="jenkins.branch.OrganizationFolder" reference="../.."/>
+        </icon>
+        <orphanedItemStrategy class="com.cloudbees.hudson.plugins.folder.computed.DefaultOrphanedItemStrategy" plugin="cloudbees-folder@6.9">
+          <pruneDeadBranches>true</pruneDeadBranches>
+          <daysToKeep>-1</daysToKeep>
+          <numToKeep>-1</numToKeep>
+        </orphanedItemStrategy>
+        <triggers/>
+        <disabled>false</disabled>
+        <navigators>
+          <org.jenkinsci.plugins.github__branch__source.GitHubSCMNavigator plugin="github-branch-source@2.5.6">
+            <repoOwner>test-cb-job</repoOwner>
+            <apiUri>https://github.lbg.eu-gb.bluemix.net/api/v3</apiUri>
+            <credentialsId>jenkinsGHEPAT</credentialsId>
+            <traits>
+              <org.jenkinsci.plugins.github__branch__source.BranchDiscoveryTrait>
+                <strategyId>1</strategyId>
+              </org.jenkinsci.plugins.github__branch__source.BranchDiscoveryTrait>
+              <org.jenkinsci.plugins.github__branch__source.OriginPullRequestDiscoveryTrait>
+                <strategyId>1</strategyId>
+              </org.jenkinsci.plugins.github__branch__source.OriginPullRequestDiscoveryTrait>
+            </traits>
+          </org.jenkinsci.plugins.github__branch__source.GitHubSCMNavigator>
+        </navigators>
+        <projectFactories>
+          <org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProjectFactory plugin="workflow-multibranch@2.21">
+            <scriptPath>Jenkinsfile</scriptPath>
+          </org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProjectFactory>
+        </projectFactories>
+        <buildStrategies/>
+      </jenkins.branch.OrganizationFolder>
+
+
+
+########### Default values for jenkins below - Don't modify unless you're comfortable #############
+
+DefaultMesos:
+  MasterIP: 
+  MasterPort: 
+
+## Overrides for generated resource names
+# See templates/_helpers.tpl
+# nameOverride:
+# fullnameOverride:
+
+Master:
+  Name: jenkins-master
+#  Image: "registry-proxy.lbg.eu-gb.mybluemix.net/jenkins/jenkins"
+#  ImageTag: "2.144-alpine"
+#  ImagePullSecret: jenkins
+  # AdminPassword: <defaults to random>
+  ImagePullPolicy: "Always"
+  Component: "jenkins-master"
+  UseSecurity: true
+  HostNetworking: false
+  AdminUser: admin
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "2048Mi"
+    limits:
+      cpu: "1000m"
+      memory: "3072Mi"
+  # Environment variables that get added to the init container (useful for e.g. http_proxy)
+  InitContainerEnv:
+    - name: http_proxy
+      value: "http://10.113.140.187:3128"
+    - name: https_proxy
+      value: "http://10.113.140.187:3128"
+  ContainerEnv:
+    # Tell the plugin where to find its config. The '..data'
+    # part is needed for now due to this bug:
+    # https://github.com/jenkinsci/configuration-as-code-plugin/issues/425
+    - name: CASC_JENKINS_CONFIG
+      value: /var/jenkins_home/casc_configs/..data/jenkins.yaml
+  #   - name: http_proxy
+  #     value: "http://192.168.64.1:3128"
+  # Set min/max heap here if needed with:
+  JavaOpts: "-Xms2048m -Xmx4096m"
+  # JenkinsOpts: ""
+  # JenkinsUriPrefix: "/jenkins"
+  # Enable pod security context (must be `true` if RunAsUser or FsGroup are set)
+  UsePodSecurityContext: true
+  # Set RunAsUser to 1000 to let Jenkins run as non-root user 'jenkins' which exists in 'jenkins/jenkins' docker image.
+  # When setting RunAsUser to a different value than 0 also set FsGroup to the same value:
+  # RunAsUser: <defaults to 0>
+  # FsGroup: <will be omitted in deployment if RunAsUser is 0>
+  ServicePort: 8080
+  # For minikube, set this to NodePort, elsewhere use LoadBalancer
+  # Use ClusterIP if your setup includes ingress controller
+  ServiceType: ClusterIP
+  # Master Service annotations
+  ServiceAnnotations: {}
+  #   service.beta.kubernetes.io/aws-load-balancer-backend-protocol: https
+  # Used to create Ingress record (should used with ServiceType: ClusterIP)
+  # Enable Kubernetes Liveness and Readiness Probes
+  # ~ 2 minutes to allow Jenkins to restart when upgrading plugins. Set ReadinessTimeout to be shorter than LivenessTimeout.
+  HealthProbes: false
+  HealthProbesLivenessTimeout: 90
+  HealthProbesReadinessTimeout: 60
+  HealthProbeLivenessFailureThreshold: 12
+  DisabledAgentProtocols:
+    - JNLP-connect
+    - JNLP2-connect
+  CSRF:
+    DefaultCrumbIssuer:
+      Enabled: true
+      ProxyCompatability: true
+  CLI: false
+  # Kubernetes service type for the JNLP slave service
+  # SETTING THIS TO "LoadBalancer" IS A HUGE SECURITY RISK: https://github.com/kubernetes/charts/issues/1341
+  SlaveListenerServiceType: NodePort
+  SlaveListenerServiceAnnotations: {}
+  LoadBalancerSourceRanges:
+  - 172.0.0.0/8
+  - 10.0.0.0/8
+  # Optionally assign a known public LB IP
+  # LoadBalancerIP: 1.2.3.4
+  # Optionally configure a JMX port
+  # requires additional JavaOpts, ie
+  # JavaOpts: >
+  #   -Dcom.sun.management.jmxremote.port=4000
+  #   -Dcom.sun.management.jmxremote.authenticate=false
+  #   -Dcom.sun.management.jmxremote.ssl=false
+  # JMXPort: 4000
+  # List of plugins to be install during Jenkins master start
+  InstallPlugins:
+    - configuration-as-code:1.21
+    - hashicorp-vault-plugin:2.2.0
+    - sauce-ondemand:1.171
+    - checkstyle:3.50
+  ScriptApproval:
+    - "new org.yaml.snakeyaml.Yaml"
+    # Below signature is used in python-installDependencies sharedlib
+    - "new java.lang.RuntimeException java.lang.String"
+    # Below signatures are used in nexusiq_multi sharedlib
+    - "method com.sonatype.nexus.api.iq.ApplicationPolicyEvaluation getApplicationCompositionReportUrl"
+    - "method com.sonatype.nexus.api.iq.PolicyEvaluationResult getAffectedComponentCount"
+    - "method com.sonatype.nexus.api.iq.PolicyEvaluationResult getCriticalComponentCount"
+    - "method com.sonatype.nexus.api.iq.PolicyEvaluationResult getModerateComponentCount"
+    - "method com.sonatype.nexus.api.iq.PolicyEvaluationResult getPolicyAlerts"
+    - "method com.sonatype.nexus.api.iq.PolicyEvaluationResult getSevereComponentCount"
+    # Below are all the signatures currently in use in jenkinsaoo
+    - field java.lang.String value
+    - method groovy.json.JsonBuilder toPrettyString
+    - method groovy.json.JsonSlurperClassic parseText java.lang.String
+    - method groovy.lang.GroovyObject getProperty java.lang.String
+    - method groovy.lang.GroovyObject invokeMethod java.lang.String java.lang.Object
+    - method groovy.util.XmlParser parseText java.lang.String
+    - method groovy.util.XmlSlurper parseText java.lang.String
+    - method groovy.util.slurpersupport.GPathResult childNodes
+    - method groovy.util.slurpersupport.GPathResult children
+    - method groovy.util.slurpersupport.GPathResult getAt int
+    - method groovy.util.slurpersupport.GPathResult name
+    - method groovy.util.slurpersupport.GPathResult plus java.lang.Object
+    - method groovy.util.slurpersupport.GPathResult text
+    - method hudson.ExtensionList get java.lang.Class
+    - method hudson.model.Item getFullName
+    - method hudson.model.ItemGroup allItems java.lang.Class
+    - method hudson.model.Job getBuilds
+    - method hudson.model.Run delete
+    - method hudson.model.Run getNumber
+    - method java.io.File exists
+    - method java.io.PrintStream println java.lang.String
+    - method java.lang.AutoCloseable close
+    - method java.lang.Class isInstance java.lang.Object
+    - method java.lang.String join java.lang.CharSequence java.lang.CharSequence[]
+    - method java.lang.Thread getName
+    - method java.lang.Throwable getCause
+    - method java.net.HttpURLConnection getResponseCode
+    - method java.net.ServerSocket getLocalPort
+    - method java.net.URL openConnection
+    - method java.net.URLConnection getInputStream
+    - method java.util.Date getDay
+    - method java.util.Date getHours
+    - method java.util.Map remove java.lang.Object
+    - method jenkins.model.Jenkins getItemByFullName java.lang.String
+    - method org.jenkins.plugins.lockableresources.LockableResourcesManager getResources
+    - method org.jenkinsci.plugins.workflow.steps.FlowInterruptedException getCauses
+    - new groovy.json.JsonBuilder java.lang.Object
+    - new groovy.json.JsonSlurperClassic
+    - new groovy.util.XmlParser
+    - new groovy.util.XmlSlurper
+    - new groovy.util.XmlSlurper boolean boolean
+    - new java.io.File java.lang.String
+    - new java.lang.Exception java.lang.String
+    - new java.lang.IllegalArgumentException java.lang.String
+    - new java.net.ServerSocket int
+    - new java.util.ArrayList
+    - new java.util.HashMap
+    - new java.util.HashMap java.util.Map
+    - staticField java.lang.System out
+    - staticMethod WorkflowScript ___cps___106585
+    - staticMethod WorkflowScript ___cps___120271
+    - staticMethod WorkflowScript ___cps___143530
+    - staticMethod WorkflowScript ___cps___20179
+    - staticMethod WorkflowScript ___cps___44938
+    - staticMethod WorkflowScript ___cps___8971
+    - staticMethod WorkflowScript ___cps___98774
+    - staticMethod groovy.json.JsonOutput toJson java.lang.Object
+    - staticMethod java.lang.System exit int
+    - staticMethod java.lang.System getProperty java.lang.String
+    - staticMethod java.lang.Thread getAllStackTraces
+    - staticMethod java.util.logging.Logger getLogger java.lang.String
+    - staticMethod javax.net.ssl.SSLContext getInstance java.lang.String
+    - staticMethod jenkins.model.GlobalConfiguration all
+    - staticMethod jenkins.model.Jenkins getInstance
+    - staticMethod org.codehaus.groovy.runtime.DateGroovyMethods clearTime java.util.Date
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods append java.io.File java.lang.Object
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods asImmutable java.util.Map
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods collectEntries java.lang.Iterable groovy.lang.Closure
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods eachWithIndex java.util.List groovy.lang.Closure
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods execute java.util.List
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods findAll java.util.List
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getAt java.lang.Object java.lang.String
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getText java.io.File
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getText java.io.InputStream
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods inspect java.lang.Object
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods invokeMethod java.lang.Object java.lang.String java.lang.Object
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods multiply java.lang.String java.lang.Number
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods println groovy.lang.Closure java.lang.Object
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods println java.lang.Object java.lang.Object
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods readLines java.lang.String
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods stripIndent java.lang.String
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods stripMargin java.lang.String
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods use java.lang.Object java.lang.Class groovy.lang.Closure
+    - staticMethod org.codehaus.groovy.runtime.ProcessGroovyMethods getText java.lang.Process
+
+  # List of groovy init scripts to be executed during Jenkins master start
+  #InitScripts:
+  #  - |
+  #    print 'adding global pipeline libraries, register properties, bootstrap jobs...'
+  # Kubernetes secret that contains a 'credentials.xml' for Jenkins
+  # CredentialsXmlSecret: jenkins-credentials
+  # Kubernetes secret that contains files to be put in the Jenkins 'secrets' directory,
+  # useful to manage encryption keys used for credentials.xml for instance (such as
+  # master.key and hudson.util.Secret)
+  # SecretsFilesSecret: jenkins-secrets
+  # Jenkins XML job configs to provision
+
+  #CustomConfigMap: false
+  # By default, the configMap is only used to set the initial config the first time
+  # that the chart is installed.  Setting `OverwriteConfig` to `true` will overwrite
+  # the jenkins config with the contents of the configMap every time the pod starts.
+  #OverwriteConfig: false
+  # Node labels and tolerations for pod assignment
+  # ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
+  # ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#taints-and-tolerations-beta-feature
+  # NodeSelector: {}
+  #Tolerations: {}
+  #PodAnnotations: {}
+
+  Ingress:
+    ApiVersion: extensions/v1beta1
+    Annotations:
+      # ingress.kubernetes.io/force-ssl-redirect: "true"
+
+    #   kubernetes.io/ingress.class: nginx
+    #   kubernetes.io/tls-acme: "true"
+    # TLS:
+    #   - secretName: jenkinsob-ingress-ssl
+    #     hosts:
+    #       - jenkinsob.k8s-t3.sandbox.extranet.group
+Agent:
+  Enabled : false
+
+Persistence:
+  Enabled: true
+  ## A manually managed Persistent Volume and Claim
+  ## Requires Persistence.Enabled: true
+  ## If defined, PVC must be created manually before volume will be bound
+  # ExistingClaim:
+
+  ## jenkins data Persistent Volume Storage Class
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", storageClassName: "", which disables dynamic provisioning
+  ## If undefined (the default) or set to null, no storageClassName spec is
+  ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+  ##   GKE, AWS & OpenStack)
+  ##
+  Annotations: {}
+  AccessMode: ReadWriteOnce
+  Size: 8Gi
+  volumes:
+  - name: casc-config
+    secret:
+      secretName: jenkins-casc-config
+  mounts:
+  - name: casc-config
+    mountPath: /var/jenkins_home/casc_configs
+    readOnly: true
+
+NetworkPolicy:
+  # Enable creation of NetworkPolicy resources.
+  Enabled: false
+  # For Kubernetes v1.4, v1.5 and v1.6, use 'extensions/v1beta1'
+  # For Kubernetes v1.7, use 'networking.k8s.io/v1'
+  ApiVersion: extensions/v1beta1
+
+## Install Default RBAC roles and bindings
+rbac:
+  install: true
+  serviceAccountName: jenkins
+  # RBAC api version (currently either v1, v1beta1, or v1alpha1)
+  apiVersion: v1
+  # Role reference
+  roleRef: cluster-admin
+  # Role kind (RoleBinding or ClusterRoleBinding)
+  roleBindingKind: ClusterRoleBinding
+
+jenkinsConfig:
+  nodes:
+    - name: shared-pas-02
+      remoteFS: "/apps/jenkins2ws"
+      labelString: "pas"
+      numExecutors: 5
+      mode: NORMAL
+  tool:
+    sonarrunnerinstallation:
+      installations:
+        - name: sonar-scanner-3.2.0
+          properties:
+            - installSource:
+                installers:
+                  - zip:
+                      label: sonar-scanner-nexus
+                      url: "http://nexus.sandbox.extranet.group/nexus/service/local/repositories/binaries/content/sonar-scanner/sonar-scanner-cli-3.2.0.1227.zip"
+    jdk:
+      installations:
+        - name: jdk8
+          home: /usr/lib/jvm/java-1.8-openjdk
+    maven:
+      installations:
+        - name: maven-3.3.9
+          properties:
+            - installSource:
+                installers:
+                  - zip:
+                      label: maven-nexus
+                      url: "http://nexus.sandbox.extranet.group/nexus/content/sites/binaries/mvn/apache-maven-3.3.9-bin.zip"
+  github:
+    host: github.lbg.eu-gb.bluemix.net
+    # Admin users are being managed with matrix-auth using Github groups for privileges
+    #jenkinsAdminUsers: Honey-Bajaj,amit-kumar,kshitiz-mahajan,rohit-varshney,raghu-vennam,mukul-garg,akash-bhatia,sourabh-sharma,vikas-nagpal,michal-tekel1,felipe-lopes,Arvind-Kumar,shivendra-sharma,praveen-mummasani,kumaradas-puthussery
+    # Sensitive infomation to be passed at run-time
+    secrets:
+      serviceUserName:
+      serviceUserPersonalAccessToken:
+      # GitHub OAuth app details used by Jenkins to authenticate by GitHub
+      clientSecret:
+      clientID:
+
+  additionalCredentials:
+    - usernamePassword:
+        description: "jenkinsGHEPAT"
+        id: "jenkinsGHEPAT"
+        scope: GLOBAL
+    - usernamePassword:
+        description: "sonar-5.6"
+        id: "sonar-5.6"
+        scope: GLOBAL
+
+  # To be passed during runtime
+  secrets:
+    bluemixDeployerUser:
+    bluemixDeployerPassword:
+    jenkinsReadAllUserName:
+    jenkinsReadAllPassword:
+
+  extendedemailpublisher:
+    defaultSuffix: "@lloydsbanking.com"
+    smtpServer: 10.113.140.170
+    smtpPort: 25
+
+  buildStatusConfig:
+    enableGithub: true
+    enableInfluxDb: true
+    influxDbUrl: http://172.20.69.16:8086/
+    influxDbDatabase: InfluxDB
+    credentialsId: InfluxDB
+    influxDbRetentionPolicy: 90d
+
+
+sonarInstallation:
+  installations:
+      - name: "Sonar-5.6"
+        serverUrl: "https://sonar.sandbox.extranet.group/sonar"
+        credentialsId: "sonar-5.6"
+        triggers:
+          envVar:
+          skipScmCause: false
+          skipUpstreamCause: false
+          
+globalLibraries:
+    libraries:
+    - defaultVersion: "master"
+      implicit: true
+      includeInChangesets: false
+      name: "workflowlib-global"
+      retriever:
+        modernSCM:
+          scm:
+            git:
+              credentialsId: "jenkinsGHEPAT"
+              remote: "https://github.lbg.eu-gb.bluemix.net/devops/devops-pipeline-workflowlib-global.git"
+    - defaultVersion: "master"
+      includeInChangesets: false
+      name: "workflowlib-ucd-global"
+      retriever:
+        modernSCM:
+          scm:
+            git:
+              credentialsId: "jenkinsGHEPAT"
+              remote: "https://github.lbg.eu-gb.bluemix.net/devops/devops-pipeline-ucdlibs-global.git"
