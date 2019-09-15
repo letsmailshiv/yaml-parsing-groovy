@@ -15,7 +15,7 @@ pipeline {
                 )
                 yamlReplace(
                     fileName: "values.yaml",
-                    keyName: "config.sample[+].yaml",
+                    keyName: "config.sample[-].yaml",
                     keyValue: "credentailsUpdated2"
                 )
                 yamlReplace(
