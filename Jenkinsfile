@@ -41,7 +41,8 @@ spec:
     - mountPath: /var/run/docker.sock
       name: docker-sock
 """
-}
+    }
+  }
     stages {
         stage('Docker Bakery Ingession') {
                 steps {
