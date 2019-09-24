@@ -17,6 +17,7 @@ pipeline {
         stage('Docker Bakery Ingession') {
                 steps {
                     imageIngessionSuite()
+                    script { 
                     stage('nested') { 
                         stages {
                             stage('stage under stage') { 
@@ -25,6 +26,7 @@ pipeline {
                                 }
                             }
                         }
+                    }
                     }
 
                 }
