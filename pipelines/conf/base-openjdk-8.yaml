@@ -1,0 +1,5 @@
+---
+    dockerFileLocation: 'base/java/8/Dockerfile' # Docker file path
+    description: 'This will be used for running java application' # Mandatory
+    source: 'hub.docker.com' # Mandatory
+    md5Dockerfile: 'cd42460269f8e4569c46b0297b23bbb5' # keep it empty it will be updated by pipeline Automatic update at first run after successful docker push to skip execution on second time.
