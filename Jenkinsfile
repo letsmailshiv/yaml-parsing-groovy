@@ -17,16 +17,17 @@ pipeline {
         stage('Docker Bakery Ingession') {
                 steps {
                     imageIngessionSuite()
-                }
-        }
-        stage('nested') { 
-            stages {
-                stage('stage under stage') { 
-                    steps {
-                        echo "hello i am slave"
+                    stage('nested') { 
+                        stages {
+                            stage('stage under stage') { 
+                                steps {
+                                    echo "hello i am slave"
+                                }
+                            }
+                        }
                     }
+
                 }
-            }
         }
     }
 }
