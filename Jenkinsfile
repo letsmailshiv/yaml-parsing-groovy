@@ -19,6 +19,15 @@ pipeline {
                     imageIngessionSuite()
                 }
         }
+        stage('nested') { 
+            stages {
+                stage('stage under stage') { 
+                    steps {
+                        echo "hello i am slave"
+                    }
+                }
+            }
+        }
     }
 }
 
