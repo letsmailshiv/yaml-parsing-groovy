@@ -54,11 +54,11 @@ spec:
     }
   }
     stages {
-        stage('Docker Bakery Ingession suite') {
-                steps {
-                    imageIngessionSuiteDEV()
-                }
+      stage('Ingession suite') {
+        steps {
+          imageIngessionSuiteDEV()
         }
+      }
     }
 }
 
