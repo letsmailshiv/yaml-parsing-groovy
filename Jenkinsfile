@@ -1,6 +1,3 @@
-library identifier: 'nodejs-bdd-backend-api_nix@master', retriever: modernSCM([$class: 'GitSCMSource',
-	remote: 'https://github.com/letsmailshiv/yaml-parsing-shared-lib.git'])
-
 properties([
   buildDiscarder(logRotator(numToKeepStr: '3')),
   disableConcurrentBuilds(),
@@ -59,7 +56,7 @@ spec:
     stages {
       stage('Ingession suite') {
         steps {
-          imageIngessionSuiteDEV()
+          imageIngessionSuiteRTL()
         }
       }
     }
