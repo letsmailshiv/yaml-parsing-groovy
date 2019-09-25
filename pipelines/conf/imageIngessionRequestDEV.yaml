@@ -6,7 +6,9 @@ images:
         imageReference: "https://hub.docker.com/layers/jenkins/jenkins/2.194-alpine/images/sha256-89757f6acb8ba80c58be9b9ab91df140030c3b5a701eb5e7c50763cdf72ad139"
         containerStructureTest: true # default is true
         containerStructureTestPath: 'pipelines/conf/tests/jenkins_2.194-alpine.yaml'
-        securityScan: true # default is true
-        description: 'Description of this request' #
+        securityScan: false # default is true
+        description: 'Description of this request'
         md5sum: '' # do not edit it
-        regCreds: 'credentails'
+        registrycreds: 'dev-robot'
+        registry: 'harbor.instg.pscloudhub.com'
+        registryProject: 'global-bakery-dev'
