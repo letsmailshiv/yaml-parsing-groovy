@@ -1,5 +1,5 @@
 images:
-    "alpine_3.7":
+    alpine_3.7:
         dockerFileExists: false # default is true
         dockerFileLocation: 'dockerfile'
         dockerImage: 'alpine:3.7' # 

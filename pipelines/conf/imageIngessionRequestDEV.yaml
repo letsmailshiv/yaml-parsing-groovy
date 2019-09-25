@@ -10,3 +10,14 @@ images:
         description: 'Description of this request' #
         md5sum: '' # do not edit it
         regCreds: 'credentails'
+    alpine_3.7:
+        dockerFileExists: false # default is true
+        dockerFileLocation: 'dockerfile'
+        dockerImage: 'alpine:3.7' # 
+        imageReference: "https://github.com/alpinelinux/docker-alpine/blob/e5205c8b54dd31cf9f9bb010f56cd5dfca73a711/x86_64/Dockerfile"
+        containerStructureTest: true # default is true
+        containerStructureTestPath: 'pipelines/conf/tests/alpine_3.7_tests.yaml' # directory for structure tests
+        securityScan: true # default is true
+        description: 'Description of this request' #
+        md5sum: '' # do not edit it
+        regCreds: 'credentails'
