@@ -60,10 +60,5 @@ spec:
         }
       }
     }
-    post { 
-      always {
-        sh "sleep 1500"
-      }
-    }
 }
 
