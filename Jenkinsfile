@@ -32,6 +32,16 @@ spec:
   containers:
   - name: jnlp
     image: jenkinsci/jnlp-slave
+  - name: hadolint
+    image: hadolint/hadolint:latest-debian
+    command:
+    - cat
+    tty: true
+  - name: structure-test
+    image: zemanlx/container-structure-test:v1.8.0-alpine
+    command:
+    - cat
+    tty: true
   - name: docker
     image: docker
     command:
@@ -44,7 +54,7 @@ spec:
     }
   }
     stages {
-        stage('Docker Bakery Ingession') {
+        stage('Docker Bakery Ingession suite') {
                 steps {
                     imageIngessionSuite()
                 }
