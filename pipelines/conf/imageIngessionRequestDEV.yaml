@@ -1,5 +1,5 @@
 images:
-    "jenkins_2.194-alpine":
+    jenkins_2.194-alpine:
         dockerFileExists: false # default is true
         dockerFileLocation: 'dockerfile'
         dockerImage: 'jenkins/jenkins:2.194-alpine' # 
