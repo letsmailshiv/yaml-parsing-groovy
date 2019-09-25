@@ -1,3 +1,4 @@
+schemaVersion: '2.0.0' # Make sure to test the latest schema version
 globalEnvVars:
   - key: "VIRTUAL_ENV"
     value: "/env"
