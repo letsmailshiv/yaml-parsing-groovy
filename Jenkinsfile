@@ -56,7 +56,7 @@ spec:
     stages {
         stage('Docker Bakery Ingession suite') {
                 steps {
-                    imageIngessionSuite()
+                    imageIngessionSuiteDEV()
                 }
         }
     }
