@@ -8,7 +8,6 @@ images:
         containerStructureTestPath: 'pipelines/conf/tests/jenkins_2.194-alpine.yaml'
         securityScan: false # default is true
         description: 'Description of this request'
-        md5sum: '' # do not edit it
         registrycreds: 'dev-robot'
         registry: 'harbor.instg.pscloudhub.com'
         registryProject: 'global-bakery-dev'

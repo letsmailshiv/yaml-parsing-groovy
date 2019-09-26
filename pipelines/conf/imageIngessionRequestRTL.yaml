@@ -8,7 +8,6 @@ images:
         containerStructureTestPath: 'pipelines/conf/tests/alpine_3.7_tests.yaml' # directory for structure tests
         securityScan: true # default is true
         description: 'Description of this request' #
-        md5sum: '' # do not edit it
         registrycreds: 'rtl-robot'
         registry: 'harbor.instg.pscloudhub.com'
         registryProject: 'global-bakery-rtl'
