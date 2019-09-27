@@ -39,6 +39,7 @@ spec:
     tty: true
   - name: utility
     image: utility:latest
+    imagePullPolicy: IfNotPresent
     command:
     - cat
     tty: true
