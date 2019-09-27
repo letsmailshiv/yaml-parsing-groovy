@@ -71,6 +71,7 @@ spec:
       gituser="shivendra.sharma"
       gitemail="shivendra.sharma@publicissapient.com"
       gitRepoHostname="github.com"
+      gitWorkFlow=gitWorkFlowTypeByBranchRule()
     }
     options {
         buildDiscarder(logRotator(numToKeepStr: '4', daysToKeepStr: '7', artifactNumToKeepStr: '4'))
