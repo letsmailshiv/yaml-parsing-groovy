@@ -13,7 +13,7 @@ library identifier: 'yaml-parsing-shared-lib@master',retriever: modernSCM([$clas
 
 library identifier: 'gitflowEnablers_multi@master', retriever: modernSCM([$class: 'GitSCMSource',
 	remote: 'https://pscode.lioncloud.net/jenkins-shared-library/gitflowEnablers_multi.git',
-	credentialsId: 'GHE_TOKEN'])
+	credentialsId: 'gitlab'])
 
 pipeline {
   agent {
