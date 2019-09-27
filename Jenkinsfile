@@ -7,6 +7,9 @@ library identifier: 'mock-bakery-test@master',retriever: modernSCM([$class: 'Git
 	remote: 'https://github.com/letsmailshiv/mock-bakery-test.git',
 	credentialsId: 'gitlab'])
 
+library identifier: 'yaml-parsing-shared-lib@master',retriever: modernSCM([$class: 'GitSCMSource',
+	remote: 'https://github.com/letsmailshiv/yaml-parsing-shared-lib.git',
+	credentialsId: 'gitlab'])
 
 pipeline {
   agent {
