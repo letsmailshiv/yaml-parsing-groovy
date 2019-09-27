@@ -62,6 +62,15 @@ spec:
 """
     }
   }
+    environment { 
+      credentialsId="gitlabssh"
+      gituser="shivendra.sharma"
+      gitemail="shivendra.sharma@publicissapient.com"
+    }
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '4', daysToKeepStr: '7', artifactNumToKeepStr: '4'))
+        disableConcurrentBuilds()
+    }
     stages {
       stage('Ingession suite') {
         steps {
