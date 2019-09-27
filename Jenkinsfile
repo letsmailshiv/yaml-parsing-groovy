@@ -11,6 +11,10 @@ library identifier: 'yaml-parsing-shared-lib@master',retriever: modernSCM([$clas
 	remote: 'https://github.com/letsmailshiv/yaml-parsing-shared-lib.git',
 	credentialsId: 'gitlab'])
 
+library identifier: 'gitflowEnablers_multi@master', retriever: modernSCM([$class: 'GitSCMSource',
+	remote: 'https://pscode.lioncloud.net/jenkins-shared-library/gitflowEnablers_multi.git',
+	credentialsId: 'GHE_TOKEN'])
+
 pipeline {
   agent {
       kubernetes {
@@ -66,6 +70,7 @@ spec:
       credentialsId="gitlabssh"
       gituser="shivendra.sharma"
       gitemail="shivendra.sharma@publicissapient.com"
+      gitRepoHostname="github.com"
     }
     options {
         buildDiscarder(logRotator(numToKeepStr: '4', daysToKeepStr: '7', artifactNumToKeepStr: '4'))
