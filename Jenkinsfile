@@ -47,6 +47,11 @@ spec:
     command:
     - cat
     tty: true
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:debug
+    command:
+    - cat
+    tty: true
   - name: structure-test
     image: zemanlx/container-structure-test:v1.8.0-alpine
     command:
