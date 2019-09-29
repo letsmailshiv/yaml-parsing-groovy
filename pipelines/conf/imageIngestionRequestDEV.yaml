@@ -1,10 +1,1 @@
-images:
-    jenkins_2.194-alpine:
-        dockerFileExists: false # default is true
-        dockerFileLocation: 'dockerfile'
-        dockerImage: 'jenkins/jenkins:2.194-alpine' # 
-        containerStructureTestPath: 'pipelines/conf/tests/jenkins_2.194-alpine.yaml'
-        description: 'Description of this request'
-        registrycreds: 'dev-robot'
-        registry: 'harbor.instg.pscloudhub.com'
-        registryProject: 'global-bakery-dev'
+images: null
