@@ -48,7 +48,7 @@ spec:
     - cat
     tty: true
   - name: kaniko
-    image: kanikocustom:latest
+    image: gcr.io/kaniko-project/executor:debug-v0.12.0
     imagePullPolicy: IfNotPresent
     command:
     - cat
