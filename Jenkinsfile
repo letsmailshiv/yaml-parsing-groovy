@@ -51,7 +51,7 @@ spec:
     image: gcr.io/kaniko-project/executor:debug-539ddefcae3fd6b411a95982a830d987f421425
     imagePullPolicy: IfNotPresent
     command:
-    - cat
+    - /busybox/cat
     tty: true
   - name: structure-test
     image: zemanlx/container-structure-test:v1.8.0-alpine
