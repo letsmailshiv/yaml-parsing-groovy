@@ -86,7 +86,7 @@ spec:
     stages {
       stage('Ingession suite') {
         steps {
-          imageIngestionRequestDEV()
+          imageIngestionSuiteDEV()
           imageIngestionSuiteRTL()
         }
       }
