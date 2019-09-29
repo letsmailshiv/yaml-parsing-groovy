@@ -1,3 +1,4 @@
+images:
   openjdk8:
     containerStructureTestPath: pipelines/conf/openjdk8/tests/openjdk8_tests.yaml
     description: this image will be used for java apps
