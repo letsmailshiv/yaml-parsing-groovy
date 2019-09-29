@@ -7,3 +7,12 @@
     registry: harbor.instg.pscloudhub.com
     registryProject: global-bakery-rtl
     registrycreds: rtl-robot
+  alpine_3.7:
+    containerStructureTestPath: pipelines/conf/tests/alpine_3.7_tests.yaml
+    description: Description of this request
+    dockerFileExists: false
+    dockerFileLocation: dockerfile
+    dockerImage: alpine:3.7
+    registry: harbor.instg.pscloudhub.com
+    registryProject: global-bakery-rtl
+    registrycreds: rtl-robot

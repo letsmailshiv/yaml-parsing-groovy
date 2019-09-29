@@ -1,5 +1,0 @@
-schemaVersion: '2.0.0'  
-metadataTest:  
-  env:
-  - key: 'JENKINS_VERSION'
-    value: '2.194'
