@@ -49,6 +49,7 @@ spec:
     tty: true
   - name: kaniko
     image: utility:latest
+    imagePullPolicy: IfNotPresent
     command:
     - cat
     tty: true
