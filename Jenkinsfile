@@ -47,6 +47,12 @@ spec:
     command:
     - cat
     tty: true
+  - name: kaniko
+    image: kanikocustom:latest
+    imagePullPolicy: IfNotPresent
+    command:
+    - cat
+    tty: true
   - name: structure-test
     image: zemanlx/container-structure-test:v1.8.0-alpine
     command:
