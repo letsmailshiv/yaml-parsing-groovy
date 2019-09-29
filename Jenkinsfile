@@ -48,10 +48,10 @@ spec:
     - cat
     tty: true
   - name: kaniko
-    image: gcr.io/kaniko-project/executor:debug-539ddefcae3fd6b411a95982a830d987f4214251
+    image: gcr.io/kaniko-project/executor:debug-v0.12.0
     imagePullPolicy: IfNotPresent
     command:
-    - /busybox/cat
+    - cat
     tty: true
   - name: structure-test
     image: zemanlx/container-structure-test:v1.8.0-alpine
