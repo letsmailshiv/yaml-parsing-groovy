@@ -1,4 +1,4 @@
-image:
+images:
   alpine_3.7:
     containerStructureTestPath: pipelines/conf/tests/alpine_3.7_tests.yaml
     description: Description of this request
