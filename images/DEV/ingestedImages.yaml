@@ -1,1 +1,7 @@
-images: null
+images:
+  openjdk8:
+    containerStructureTestPath: pipelines/conf/openjdk8/tests/openjdk8_tests.yaml
+    description: Image will be used for java application
+    dockerFileExists: true
+    dockerFileLocation: pipelines/conf/openjdk8/Dockerfile
+    dockerImage: openjdk:8
