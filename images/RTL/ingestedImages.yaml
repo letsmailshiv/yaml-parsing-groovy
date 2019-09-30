@@ -5,6 +5,3 @@ image:
     dockerFileExists: false
     dockerFileLocation: dockerfile
     dockerImage: alpine:3.7
-    registry: harbor.instg.pscloudhub.com
-    registryProject: global-bakery-rtl
-    registrycreds: rtl-robot
