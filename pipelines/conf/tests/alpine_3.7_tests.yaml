@@ -1,5 +1,0 @@
-schemaVersion: '2.0.0'  
-fileContentTests:  
-- name: 'entrypoint'
-  path: '/etc/os-release'
-  expectedContents: ['VERSION_ID=3.7.3']
